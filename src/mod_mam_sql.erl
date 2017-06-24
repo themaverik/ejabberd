@@ -198,31 +198,20 @@ export(_Server) ->
               []
       end},
      {archive_msg,
-      fun(Host, #archive_msg{us ={_LUser, LServer},
+      fun(Host, #archive_msg{us ={LUser, LServer},
                 id = _ID, timestamp = TS, peer = Peer,
-                bare_peer = {PUser, PServer, <<>>},
                 type = Type, nick = Nick, packet = Pkt})
           when LServer == Host ->
                 TStmp = now_to_usec(TS),
                 SUser = case Type of
-                      chat -> PUser;
-<<<<<<< HEAD
-                      groupchat -> jid:to_string({PUser, PServer, <<>>})
-                    end,
-                BarePeer = jid:to_string(jid:tolower(jid:remove_resource(Peer))),
-                LPeer = jid:to_string(jid:tolower(Peer)),
-                XML = fxml:element_to_binary(Pkt),
-                Body = fxml:get_subtag_cdata(Pkt, <<"body">>),
-                SType = jlib:atom_to_binary(Type),
-=======
-                      groupchat -> jid:encode({PUser, PServer, <<>>})
+                      chat -> LUser;
+                      groupchat -> jid:encode({LUser, LServer, <<>>})
                     end,
                 BarePeer = jid:encode(jid:tolower(jid:remove_resource(Peer))),
                 LPeer = jid:encode(jid:tolower(Peer)),
                 XML = fxml:element_to_binary(Pkt),
                 Body = fxml:get_subtag_cdata(Pkt, <<"body">>),
                 SType = misc:atom_to_binary(Type),
->>>>>>> 70606d7f1ae6b74142f9b577a25f4434aa7f3df8
                 [?SQL("insert into archive (username, timestamp, "
 				 "peer, bare_peer, xml, txt, kind, nick) "
 				 "values (%(SUser)s, %(TStmp)d, %(LPeer)s, "
@@ -231,7 +220,7 @@ export(_Server) ->
          (_Host, _R) ->
               []
       end}].
-
+  
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
