@@ -116,7 +116,7 @@ write_prefs(LUser, _LServer, #archive_prefs{default = Default,
              "def=%(SDefault)s",
              "always=%(SAlways)s",
              "never=%(SNever)s"]) of
-	{updated, _} ->
+	ok ->
 	    ok;
 	Err ->
 	    Err
@@ -206,6 +206,7 @@ export(_Server) ->
                 TStmp = now_to_usec(TS),
                 SUser = case Type of
                       chat -> PUser;
+<<<<<<< HEAD
                       groupchat -> jid:to_string({PUser, PServer, <<>>})
                     end,
                 BarePeer = jid:to_string(jid:tolower(jid:remove_resource(Peer))),
@@ -213,6 +214,15 @@ export(_Server) ->
                 XML = fxml:element_to_binary(Pkt),
                 Body = fxml:get_subtag_cdata(Pkt, <<"body">>),
                 SType = jlib:atom_to_binary(Type),
+=======
+                      groupchat -> jid:encode({PUser, PServer, <<>>})
+                    end,
+                BarePeer = jid:encode(jid:tolower(jid:remove_resource(Peer))),
+                LPeer = jid:encode(jid:tolower(Peer)),
+                XML = fxml:element_to_binary(Pkt),
+                Body = fxml:get_subtag_cdata(Pkt, <<"body">>),
+                SType = misc:atom_to_binary(Type),
+>>>>>>> 70606d7f1ae6b74142f9b577a25f4434aa7f3df8
                 [?SQL("insert into archive (username, timestamp, "
 				 "peer, bare_peer, xml, txt, kind, nick) "
 				 "values (%(SUser)s, %(TStmp)d, %(LPeer)s, "
